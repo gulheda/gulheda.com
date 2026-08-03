@@ -1,0 +1,204 @@
+/* =============================================================
+   PROJECT ROSE GARDEN — design tokens & global styles
+   Palette locked to the Flux Prompt Library:
+   dusty rose #D4A5A5 · mauve #A67C7C · sage #7A8F7A · gold #D4AF37 · cream #E9D8B7
+   ============================================================= */
+
+:root {
+  /* --- core palette (from the brief) --- */
+  --rose: #d4a5a5;
+  --mauve: #a67c7c;
+  --sage: #7a8f7a;
+  --gold: #d4af37;
+  --gold-bright: #e7c766;
+  --cream: #e9d8b7;
+
+  /* --- Gülheda's palette: ivory → champagne → blush → mauve → brown --- */
+  --ivory: #faf6ef;
+  --champagne: #ecdcc0;
+  --blush: #e6cdc6;
+  --dusty: #d4a5a5;
+  --mauve-soft: #b99aa0;
+  --umber: #4a3627;
+  --deep-brown: #2b1f19;
+
+  /* --- derived atmosphere --- */
+  --amber: #c79a5b;
+  --dusk: #2a1c22; /* warm near-black, garden at dusk */
+  --dusk-deep: #1b1216;
+  --night: #140d11;
+  --marble: #f6efe4; /* the white hall beyond the gate */
+  --marble-warm: #efe4d2;
+
+  /* --- semantic: deep night, warm light type --- */
+  --night-bg: #0a0b16;
+  --bg: var(--night-bg);
+  --ink: #f4f4f2;
+  --text: #e6e6e4;
+  --text-dim: rgba(230, 230, 228, 0.86);
+  --text-faint: rgba(230, 230, 228, 0.6);
+  /* one accent, used sparingly — everything else is bone on charcoal */
+  --gold-ink: #cfcfcd;
+  --bone: rgba(230, 230, 228, 0.5);
+  --line: rgba(230, 230, 228, 0.2);
+  --gold-glow: rgba(212, 175, 55, 0.35);
+
+  /* --- type --- */
+  --font-display: "Jost Variable", "Jost", system-ui, -apple-system, sans-serif;
+  --font-serif: "Cormorant", Georgia, serif;
+  --font-sans: "Jost Variable", "Jost", system-ui, -apple-system, sans-serif;
+
+  /* --- spacing / rhythm --- */
+  --gutter: clamp(1.25rem, 5vw, 6rem);
+  --maxw: 1340px;
+
+  /* --- motion --- */
+  --ease-silk: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* fluid root scale: every rem in the site grows with the screen,
+     so large displays get a properly sized page, not a small island */
+  font-size: clamp(15px, 0.55vw + 8.5px, 21px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--text);
+  background: var(--night-bg);
+  line-height: 1.6;
+  overflow-x: hidden;
+  /* native cursor stays visible — the gold ring is a follower accent */
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--gold-glow);
+  color: #fff;
+}
+
+/* --- typography primitives --- */
+.display {
+  font-family: var(--font-display);
+  font-weight: 300;
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+}
+
+.serif {
+  font-family: var(--font-serif);
+}
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.42em;
+  font-size: clamp(0.62rem, 1.1vw, 0.72rem);
+  color: var(--gold-ink);
+}
+
+/* the engineer's voice: section labels styled as code comments */
+.eyebrow--code {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, "SF Mono", monospace;
+  text-transform: lowercase;
+  letter-spacing: 0.2em;
+  font-size: clamp(0.7rem, 1.2vw, 0.82rem);
+}
+
+.gold-text {
+  color: var(--gold-ink);
+}
+
+/* subtle shimmering gold gradient text for the logo & headings */
+.gold-gradient {
+  background: linear-gradient(
+    92deg,
+    var(--amber) 0%,
+    var(--gold-bright) 30%,
+    var(--gold) 55%,
+    var(--cream) 78%,
+    var(--gold) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* --- layout helpers --- */
+.wrap {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: clip;
+}
+
+/* thin gold hairline divider */
+.hairline {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--line) 20%,
+    var(--gold) 50%,
+    var(--line) 80%,
+    transparent
+  );
+  opacity: 0.7;
+}
+
+/* accessible focus ring in the language of the theme */
+:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Utility: hide but keep for screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
