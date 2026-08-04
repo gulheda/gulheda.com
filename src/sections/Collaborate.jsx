@@ -1,148 +1,45 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useLocale } from "../i18n.jsx";
-import {
-  collaborate,
-  whyFor,
-  composeMessage,
-  detectTech,
-} from "../data/collaborate.js";
+import { collaborate, detectTech } from "../data/collaborate.js";
 import { submitInquiry, isDemo } from "../services/submitInquiry.js";
 import Heading from "../components/Heading.jsx";
 
 /* =====================================================================
-   "Birlikte Ne Geliştirebiliriz?" — the message IS the interface.
+   "Birlikte Ne Geliştirebiliriz?" — deliberately simple.
 
-   No stepper, no boxed form: the visitor completes a large statement
-   written in the hero's own typographic voice. Blanks in the sentence
-   are interactive slots (click → inline menu), the free text sits on
-   ruled lines like a notebook, and the sender introduces themselves in
-   a sentence too. The classic composed message is still built behind
-   the scenes and can be reviewed/edited before sending.
+   One glance, one form: pick a topic if you like, write a few
+   sentences, leave your name and e-mail, send. The left column keeps
+   it human — what to expect, and a direct e-mail address for people
+   who prefer their own mail client. No steps, no wizardry.
    ===================================================================== */
 
 const EASE = [0.16, 1, 0.3, 1];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
-const MIN_DESC = 20;
+const MIN_MSG = 10;
 
 const EMPTY = {
-  purpose: "",
-  field: "",
-  stage: "",
-  support: "",
-  description: "",
+  topic: "",
+  message: "",
   name: "",
   email: "",
   org: "",
-  linkedin: "",
-  message: "",
   trap: "", // honeypot
 };
-
-/* One blank in the sentence: a button showing the current choice (or a
-   placeholder), opening an inline listbox. Only one menu is open at a
-   time — the parent owns that state. */
-function Slot({
-  id,
-  value,
-  placeholder,
-  options,
-  onPick,
-  open,
-  onToggle,
-  invalid,
-  display = "label",
-}) {
-  const rootRef = useRef(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const away = (e) => {
-      if (!rootRef.current?.contains(e.target)) onToggle(null);
-    };
-    const esc = (e) => {
-      if (e.key === "Escape") onToggle(null);
-    };
-    document.addEventListener("pointerdown", away);
-    document.addEventListener("keydown", esc);
-    return () => {
-      document.removeEventListener("pointerdown", away);
-      document.removeEventListener("keydown", esc);
-    };
-  }, [open, onToggle]);
-
-  const chosen = options.find((o) => o.id === value);
-
-  return (
-    <span className="slot" ref={rootRef}>
-      <button
-        type="button"
-        className={[
-          "slot__btn",
-          chosen ? "is-filled" : "is-empty",
-          invalid ? "is-invalid" : "",
-        ].join(" ")}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        onClick={() => onToggle(open ? null : id)}
-        data-cursor="hover"
-      >
-        {chosen ? chosen[display] || chosen.label : placeholder}
-        <span className="slot__mark" aria-hidden="true">
-          {open ? "−" : "+"}
-        </span>
-      </button>
-
-      {open && (
-        <motion.ul
-          className="slot__menu"
-          role="listbox"
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.28, ease: EASE }}
-        >
-          {options.map((o) => (
-            <li key={o.id} role="option" aria-selected={o.id === value}>
-              <button
-                type="button"
-                className={`slot__opt ${o.id === value ? "is-on" : ""}`}
-                onClick={() => {
-                  onPick(o.id);
-                  onToggle(null);
-                }}
-                data-spot=""
-              >
-                {o.label}
-              </button>
-            </li>
-          ))}
-        </motion.ul>
-      )}
-    </span>
-  );
-}
 
 export default function Collaborate() {
   const { locale, shared } = useLocale();
   const d = collaborate[locale];
-  const m = d.mad;
+  const c = d.simple;
 
   const [a, setA] = useState(EMPTY);
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle"); // idle | sending | done | error
-  const [openSlot, setOpenSlot] = useState(null);
-  const [messageTouched, setMessageTouched] = useState(false);
-  const [previewOpen, setPreviewOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [delivered, setDelivered] = useState(false);
 
-  const purpose = useMemo(
-    () => d.purposes.find((p) => p.id === a.purpose),
-    [d.purposes, a.purpose],
-  );
-  const asks = purpose?.asks ?? [];
-  const why = a.field ? whyFor(locale, a.field) : null;
-  const detected = useMemo(() => detectTech(a.description), [a.description]);
+  const detected = useMemo(() => detectTech(a.message), [a.message]);
+  const topic = c.topics.find((t) => t.id === a.topic);
 
   const set = (key) => (val) => {
     setA((prev) => ({ ...prev, [key]: val }));
@@ -150,46 +47,18 @@ export default function Collaborate() {
   };
   const onInput = (key) => (e) => set(key)(e.target.value);
 
-  /* keep the composed message in sync until the visitor edits it */
-  useEffect(() => {
-    if (!messageTouched && a.purpose) {
-      setA((prev) => ({ ...prev, message: composeMessage(locale, prev) }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    locale,
-    a.purpose,
-    a.field,
-    a.stage,
-    a.support,
-    a.description,
-    messageTouched,
-  ]);
-
   const validate = () => {
     const e = {};
-    if (!a.purpose) e.purpose = d.errors.purpose;
-    if (asks.includes("field") && !a.field) e.field = d.errors.field;
-    if (asks.includes("stage") && !a.stage) e.stage = d.errors.stage;
-    if (asks.includes("support") && !a.support) e.support = d.errors.support;
-    if (a.description.trim().length < MIN_DESC)
-      e.description = d.errors.description;
     if (!a.name.trim()) e.name = d.errors.name;
     if (!EMAIL_RE.test(a.email.trim())) e.email = d.errors.email;
-    if (!a.message.trim()) e.message = d.errors.message;
-    if (
-      a.linkedin.trim() &&
-      !/^(https?:\/\/|www\.|linkedin\.com)/i.test(a.linkedin.trim())
-    )
-      e.linkedin = d.errors.linkedin;
+    if (a.message.trim().length < MIN_MSG) e.message = d.errors.message;
     setErrors(e);
-    return e;
+    return Object.keys(e).length === 0;
   };
 
   const onSubmit = async (ev) => {
     ev.preventDefault();
-    const e = validate();
-    if (Object.keys(e).length > 0) return;
+    if (!validate()) return;
 
     // honeypot: a real person never fills this. Fail quietly.
     if (a.trap) {
@@ -200,7 +69,14 @@ export default function Collaborate() {
 
     setStatus("sending");
     try {
-      const res = await submitInquiry({ ...a, trap: undefined, locale });
+      const res = await submitInquiry({
+        name: a.name,
+        email: a.email,
+        org: a.org,
+        purpose: topic?.label || "",
+        message: a.message,
+        locale,
+      });
       setDelivered(Boolean(res?.delivered));
       setStatus("done");
     } catch {
@@ -211,12 +87,9 @@ export default function Collaborate() {
   const reset = () => {
     setA(EMPTY);
     setErrors({});
-    setMessageTouched(false);
     setStatus("idle");
     setCopied(false);
     setDelivered(false);
-    setPreviewOpen(false);
-    setOpenSlot(null);
   };
 
   const copyMessage = async () => {
@@ -240,7 +113,6 @@ export default function Collaborate() {
       `${d.nameLabel}: ${a.name}`,
       `${d.emailLabel}: ${a.email}`,
       a.org ? `${d.orgLabel}: ${a.org}` : "",
-      a.linkedin ? `${d.linkedinLabel}: ${a.linkedin}` : "",
     ]
       .filter(Boolean)
       .join("\n");
@@ -249,24 +121,10 @@ export default function Collaborate() {
     )}&body=${encodeURIComponent(lines)}`;
   };
 
-  /* which meta slots the chosen purpose actually asks for */
-  const railSlots = ["field", "stage", "support"].filter((k) =>
-    asks.includes(k),
-  );
-  const railOptions = { field: d.fields, stage: d.stages, support: d.supports };
-
-  const descLabel =
-    d.descriptionLegend[a.purpose] || d.descriptionLegend.project;
-
-  const slotErrors = ["purpose", ...railSlots]
-    .map((k) => errors[k])
-    .filter(Boolean);
-
   return (
     <section id="collaborate" className="section collab">
       <div className="wrap collab__inner">
         <Heading eyebrow={d.eyebrow} title={d.heading} index="05" />
-        <p className="collab__intro">{d.intro}</p>
 
         {status === "done" ? (
           <motion.div
@@ -301,278 +159,179 @@ export default function Collaborate() {
             </button>
           </motion.div>
         ) : (
-          <form className="mad" onSubmit={onSubmit} noValidate>
-            {/* honeypot — off-screen, never announced, never autofilled */}
-            <div className="collab__trap" aria-hidden="true">
-              <label htmlFor="collab-company-url">Company URL</label>
-              <input
-                id="collab-company-url"
-                name="company_url"
-                type="text"
-                tabIndex={-1}
-                autoComplete="off"
-                value={a.trap}
-                onChange={onInput("trap")}
-              />
-            </div>
+          <div className="cf">
+            {/* ---- left: what to expect + the direct route ---- */}
+            <aside className="cf__aside">
+              <p className="cf__title display">{c.asideTitle}</p>
+              <p className="cf__body">{c.asideBody}</p>
 
-            {/* ---- the statement: greeting + purpose blank ---- */}
-            <p className="mad__line">
-              {m.greet1}
-              <Slot
-                id="purpose"
-                value={a.purpose}
-                placeholder={m.purposePlaceholder}
-                options={d.purposes}
-                onPick={set("purpose")}
-                open={openSlot === "purpose"}
-                onToggle={setOpenSlot}
-                invalid={Boolean(errors.purpose)}
-                display="inline"
-              />
-              {m.greet2}
-            </p>
-
-            {/* ---- the detail rail: only the blanks this purpose needs ---- */}
-            {railSlots.length > 0 && (
-              <motion.div
-                className="mad__rail"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: EASE }}
+              <p className="cf__direct-label">{c.directLabel}</p>
+              <a
+                className="cf__direct"
+                href={`mailto:${shared.email}`}
+                data-cursor="hover"
               >
-                {railSlots.map((k) => (
-                  <div className="mad__cell" key={k}>
-                    <span className="mad__cell-label">
-                      {"// " + m.slotLabels[k]}
-                    </span>
-                    <Slot
-                      id={k}
-                      value={a[k]}
-                      placeholder={m.slotPlaceholder}
-                      options={railOptions[k]}
-                      onPick={set(k)}
-                      open={openSlot === k}
-                      onToggle={setOpenSlot}
-                      invalid={Boolean(errors[k])}
-                    />
-                  </div>
-                ))}
-              </motion.div>
-            )}
+                {shared.email}
+              </a>
+            </aside>
 
-            {slotErrors.length > 0 && (
-              <p className="field__error" role="alert">
-                {slotErrors[0]}
-              </p>
-            )}
+            {/* ---- right: the form, three fields and a topic ---- */}
+            <form className="cf__form" onSubmit={onSubmit} noValidate>
+              {/* honeypot — off-screen, never announced, never autofilled */}
+              <div className="collab__trap" aria-hidden="true">
+                <label htmlFor="collab-company-url">Company URL</label>
+                <input
+                  id="collab-company-url"
+                  name="company_url"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={a.trap}
+                  onChange={onInput("trap")}
+                />
+              </div>
 
-            {/* ---- why me, when a field has been picked ---- */}
-            {why && (
-              <motion.p
-                className="mad__why"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, ease: EASE }}
-              >
-                <strong>{d.whyTitle}</strong> {d.whyNote}{" "}
-                {why.join(" · ")}
-              </motion.p>
-            )}
+              <fieldset className="cf__topics">
+                <legend className="field__label">
+                  {c.topicLabel}
+                  <span className="field__opt">{c.topicOptional}</span>
+                </legend>
+                <div className="cf__chips">
+                  {c.topics.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      className={`cf__chip ${a.topic === t.id ? "is-on" : ""}`}
+                      aria-pressed={a.topic === t.id}
+                      onClick={() => set("topic")(a.topic === t.id ? "" : t.id)}
+                      data-cursor="hover"
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
 
-            {/* ---- the free text, on ruled notebook lines ---- */}
-            {a.purpose && (
-              <motion.div
-                className="mad__desc"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: EASE }}
-              >
-                <label className="mad__desc-label" htmlFor="collab-desc">
-                  {"// " + descLabel}
+              <div className="field">
+                <label className="field__label" htmlFor="cf-msg">
+                  {c.msgLabel}
                 </label>
                 <textarea
-                  id="collab-desc"
-                  className="mad__paper"
-                  rows={4}
-                  value={a.description}
-                  onChange={onInput("description")}
-                  placeholder={d.descriptionPlaceholder}
-                  aria-invalid={errors.description ? "true" : undefined}
-                  aria-describedby={
-                    errors.description ? "collab-desc-error" : undefined
-                  }
+                  id="cf-msg"
+                  className="field__input field__input--area"
+                  rows={5}
+                  value={a.message}
+                  onChange={onInput("message")}
+                  placeholder={c.msgPlaceholder}
+                  aria-invalid={errors.message ? "true" : undefined}
                 />
-                {errors.description && (
-                  <p
-                    className="field__error"
-                    id="collab-desc-error"
-                    role="alert"
-                  >
-                    {errors.description}
+                {errors.message && (
+                  <p className="field__error" role="alert">
+                    {errors.message}
                   </p>
                 )}
-
                 {detected.length > 0 && (
-                  <div className="mad__tech" aria-live="polite">
-                    <span className="mad__tech-label">
+                  <div className="cf__tech" aria-live="polite">
+                    <span className="cf__tech-label">
                       {"// " + d.detectedLabel}
                     </span>
                     {detected.map((t) => (
-                      <span className="mad__chip" key={t}>
+                      <span className="cf__tag" key={t}>
                         {t}
                       </span>
                     ))}
                   </div>
                 )}
-              </motion.div>
-            )}
+              </div>
 
-            {/* ---- who is writing: a sentence, not a field grid ---- */}
-            <p className="mad__line mad__line--id">
-              {m.identity1}
-              <span
-                className={`mad__input-wrap ${errors.name ? "is-invalid" : ""}`}
-              >
+              <div className="cf__row">
+                <div className="field">
+                  <label className="field__label" htmlFor="cf-name">
+                    {d.nameLabel}
+                  </label>
+                  <input
+                    id="cf-name"
+                    className="field__input"
+                    type="text"
+                    autoComplete="name"
+                    value={a.name}
+                    onChange={onInput("name")}
+                    aria-invalid={errors.name ? "true" : undefined}
+                  />
+                  {errors.name && (
+                    <p className="field__error" role="alert">
+                      {errors.name}
+                    </p>
+                  )}
+                </div>
+
+                <div className="field">
+                  <label className="field__label" htmlFor="cf-email">
+                    {d.emailLabel}
+                  </label>
+                  <input
+                    id="cf-email"
+                    className="field__input"
+                    type="email"
+                    autoComplete="email"
+                    value={a.email}
+                    onChange={onInput("email")}
+                    aria-invalid={errors.email ? "true" : undefined}
+                  />
+                  {errors.email && (
+                    <p className="field__error" role="alert">
+                      {errors.email}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="field">
+                <label className="field__label" htmlFor="cf-org">
+                  {d.orgLabel}
+                  <span className="field__opt">{d.optional}</span>
+                </label>
                 <input
-                  className="mad__input"
+                  id="cf-org"
+                  className="field__input"
                   type="text"
-                  autoComplete="name"
-                  placeholder={m.namePh}
-                  size={Math.max(a.name.length, m.namePh.length)}
-                  value={a.name}
-                  onChange={onInput("name")}
-                  aria-label={d.nameLabel}
-                  aria-invalid={errors.name ? "true" : undefined}
+                  autoComplete="organization"
+                  value={a.org}
+                  onChange={onInput("org")}
                 />
-              </span>
-              {m.identity2}
-              <span
-                className={`mad__input-wrap ${errors.email ? "is-invalid" : ""}`}
-              >
-                <input
-                  className="mad__input"
-                  type="email"
-                  autoComplete="email"
-                  placeholder={m.emailPh}
-                  size={Math.max(a.email.length, m.emailPh.length)}
-                  value={a.email}
-                  onChange={onInput("email")}
-                  aria-label={d.emailLabel}
-                  aria-invalid={errors.email ? "true" : undefined}
-                />
-              </span>
-              {m.identity3}
-            </p>
-            {(errors.name || errors.email) && (
-              <p className="field__error" role="alert">
-                {errors.name || errors.email}
-              </p>
-            )}
+              </div>
 
-            <div className="mad__optional">
-              <input
-                className="mad__ghost-input"
-                type="text"
-                autoComplete="organization"
-                placeholder={`${m.orgPh} · ${d.optional}`}
-                value={a.org}
-                onChange={onInput("org")}
-                aria-label={d.orgLabel}
-              />
-              <input
-                className="mad__ghost-input"
-                type="text"
-                inputMode="url"
-                placeholder={`${m.linkedinPh} · ${d.optional}`}
-                value={a.linkedin}
-                onChange={onInput("linkedin")}
-                aria-label={d.linkedinLabel}
-                aria-invalid={errors.linkedin ? "true" : undefined}
-              />
-            </div>
-            {errors.linkedin && (
-              <p className="field__error" role="alert">
-                {errors.linkedin}
-              </p>
-            )}
+              {isDemo && (
+                <div className="collab__demo" role="note">
+                  <p className="collab__demo-title">{d.demoTitle}</p>
+                  <p className="collab__demo-body">{d.demoBody}</p>
+                </div>
+              )}
 
-            {/* ---- the composed message, on request ---- */}
-            {a.purpose && (
-              <div className="mad__preview">
+              {status === "error" && (
+                <p className="field__error" role="alert">
+                  {d.errors.generic}
+                </p>
+              )}
+
+              <div className="cf__send">
                 <button
-                  type="button"
-                  className="mad__preview-toggle"
-                  aria-expanded={previewOpen}
-                  onClick={() => setPreviewOpen((v) => !v)}
+                  type="submit"
+                  className="btn btn--primary"
+                  disabled={status === "sending"}
                 >
-                  {previewOpen ? m.previewClose : m.previewOpen}
-                  <span aria-hidden="true">{previewOpen ? " ↑" : " ↓"}</span>
+                  {status === "sending" ? (
+                    <>
+                      <span className="btn__spinner" aria-hidden="true" />
+                      {d.sending}
+                    </>
+                  ) : (
+                    d.submit
+                  )}
                 </button>
-
-                {previewOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, ease: EASE }}
-                  >
-                    <textarea
-                      className="field__input field__input--area field__input--msg"
-                      rows={9}
-                      value={a.message}
-                      onChange={(e) => {
-                        setMessageTouched(true);
-                        onInput("message")(e);
-                      }}
-                      aria-label={d.messageLabel}
-                    />
-                    {messageTouched && (
-                      <button
-                        type="button"
-                        className="field__link"
-                        onClick={() => {
-                          setMessageTouched(false);
-                          set("message")(composeMessage(locale, a));
-                        }}
-                      >
-                        {d.regenerate}
-                      </button>
-                    )}
-                  </motion.div>
-                )}
               </div>
-            )}
-
-            {isDemo && (
-              <div className="collab__demo" role="note">
-                <p className="collab__demo-title">{d.demoTitle}</p>
-                <p className="collab__demo-body">{d.demoBody}</p>
-              </div>
-            )}
-
-            {status === "error" && (
-              <p className="field__error" role="alert">
-                {d.errors.generic}
-              </p>
-            )}
-
-            <div className="mad__send">
-              <button
-                type="submit"
-                className="btn btn--primary"
-                disabled={status === "sending"}
-              >
-                {status === "sending" ? (
-                  <>
-                    <span className="btn__spinner" aria-hidden="true" />
-                    {d.sending}
-                  </>
-                ) : (
-                  d.submit
-                )}
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         )}
       </div>
     </section>

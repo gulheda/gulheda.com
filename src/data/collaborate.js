@@ -246,6 +246,23 @@ const tr = {
     generic: "Bir şeyler ters gitti. Lütfen tekrar dene.",
   },
 
+  simple: {
+    asideTitle: "Kısa bir mesaj yeter.",
+    asideBody:
+      "Bir proje, staj, teknik bir soru ya da sadece merhaba — hepsine açığım. Genellikle 24 saat içinde dönüş yaparım.",
+    directLabel: "// dilersen doğrudan yaz",
+    topicLabel: "Konu",
+    topicOptional: "isteğe bağlı",
+    topics: [
+      { id: "project", label: "Proje" },
+      { id: "job", label: "İş / Staj" },
+      { id: "question", label: "Teknik soru" },
+      { id: "hello", label: "Tanışma" },
+    ],
+    msgLabel: "Mesajın",
+    msgPlaceholder: "Birkaç cümle yeterli — detayları sonra konuşuruz.",
+  },
+
   mad: {
     greet1: "Merhaba Gülheda — sana ",
     greet2: " yazıyorum.",
@@ -411,6 +428,23 @@ const en = {
     linkedin: "LinkedIn must be a valid link.",
     message: "The message cannot be empty.",
     generic: "Something went wrong. Please try again.",
+  },
+
+  simple: {
+    asideTitle: "A short message is enough.",
+    asideBody:
+      "A project, an internship, a technical question or just a hello — I’m open to all of it. I usually reply within 24 hours.",
+    directLabel: "// or write directly",
+    topicLabel: "Topic",
+    topicOptional: "optional",
+    topics: [
+      { id: "project", label: "Project" },
+      { id: "job", label: "Job / Internship" },
+      { id: "question", label: "Technical question" },
+      { id: "hello", label: "Say hello" },
+    ],
+    msgLabel: "Your message",
+    msgPlaceholder: "A few sentences are enough — we can talk details later.",
   },
 
   mad: {
