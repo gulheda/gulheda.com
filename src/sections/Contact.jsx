@@ -12,8 +12,10 @@ export default function Contact() {
     offset: ["start start", "end end"],
   });
 
-  const opacity = useTransform(scrollYProgress, [0.42, 0.72], [0, 1]);
-  const y = useTransform(scrollYProgress, [0.42, 0.75], [46, 0]);
+  /* the text settles well before the scroll ends, then simply stays —
+     the tail of the section changes nothing on screen */
+  const opacity = useTransform(scrollYProgress, [0.3, 0.58], [0, 1]);
+  const y = useTransform(scrollYProgress, [0.3, 0.6], [46, 0]);
   const hintFade = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
 
   return (

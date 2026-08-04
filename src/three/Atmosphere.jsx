@@ -673,6 +673,9 @@ export default function Atmosphere() {
         const r = gate.getBoundingClientRect();
         const span = r.height - window.innerHeight;
         gateT = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
+        /* the light opens to its sweet spot and RESTS there: petals stay
+           visible, the screen never washes out to a blank white */
+        gateT = Math.min(gateT, 0.62);
       }
       const hero = document.getElementById("hero");
       if (hero) {
