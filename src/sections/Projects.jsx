@@ -30,7 +30,7 @@ export default function Projects() {
                       }
                     : {})}
                 >
-                  <span className="project__index">
+                  <span className="project__ghost" aria-hidden="true">
                     {String(i + 1).padStart(2, "0")}
                   </span>
 

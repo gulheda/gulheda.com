@@ -64,6 +64,7 @@ export default function Contact() {
           <p className="contact__sign">
             {shared.fullName} · {t.identity.title}
           </p>
+          <p className="contact__copy">© {new Date().getFullYear()}</p>
         </motion.div>
 
         <motion.p className="contact__hint" style={{ opacity: hintFade }}>

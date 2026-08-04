@@ -2,7 +2,7 @@ import "./styles/app.css";
 import { MotionConfig } from "framer-motion";
 
 import { lazy, Suspense, useEffect } from "react";
-import { LocaleProvider, useLocale } from "./i18n.jsx";
+import { LocaleProvider } from "./i18n.jsx";
 import Cursor from "./components/Cursor.jsx";
 import SafeBoundary from "./components/SafeBoundary.jsx";
 
@@ -37,17 +37,6 @@ function SpotlightDelegate() {
   return null;
 }
 
-function Footer() {
-  const { t, shared } = useLocale();
-  return (
-    <footer className="footer">
-      <p>
-        © {new Date().getFullYear()} {shared.brand} — {t.ui.footer}
-      </p>
-    </footer>
-  );
-}
-
 export default function App() {
   return (
     <LocaleProvider>
@@ -75,10 +64,9 @@ export default function App() {
           <Experience />
           <Marquee />
           <Collaborate />
+          {/* the threshold: the page ends inside the opening light */}
           <Contact />
         </main>
-
-        <Footer />
       </MotionConfig>
     </LocaleProvider>
   );

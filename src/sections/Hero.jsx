@@ -124,6 +124,17 @@ export default function Hero() {
             ))}
           </motion.p>
 
+          {/* the same quiet ornament the contact threshold ends on */}
+          <motion.div className="rule hero__rule" variants={rise} aria-hidden="true">
+            <span className="rule__line rule__line--l" />
+            <span className="rule__gem" />
+            <span className="rule__line rule__line--r" />
+          </motion.div>
+
+          <motion.p className="hero__tag" variants={rise}>
+            {identity.tagline}
+          </motion.p>
+
           <motion.ul className="hero__spec" variants={rise}>
             {identity.meta?.status && (
               <li className="hero__spec-item hero__spec-item--status">
@@ -170,7 +181,10 @@ export default function Hero() {
               <span className="panel__index" aria-hidden="true">
                 {p.k}
               </span>
-              <span className="panel__title">{p.title}</span>
+              <span className="panel__body">
+                <span className="panel__title">{p.title}</span>
+                <span className="panel__note">{p.note}</span>
+              </span>
               <span className="panel__arrow" aria-hidden="true">
                 →
               </span>
