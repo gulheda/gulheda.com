@@ -220,7 +220,10 @@ const ATMOS_FRAG = /* glsl */ `
       float edgeN = fbm(p * 3.0 + uTime * 0.04) * 0.15;
       float lobe = pow(abs(cos(angH * 4.5 + (1.0 - uIntro) * 1.3
                              + uTime * 0.02)), 0.55);
-      float radius = uIntro * uIntro * 1.9 * (0.74 + 0.26 * lobe);
+      /* normalised to the screen's own half-diagonal, so the resting
+         bloom keeps its petals on screen on portrait phones too */
+      float coverH = length(hc) + 0.06;
+      float radius = uIntro * uIntro * coverH * 2.0 * (0.74 + 0.26 * lobe);
       float aperture = smoothstep(radius, radius - 0.34, hd + edgeN);
 
       vec3 night = vec3(0.010, 0.011, 0.020);
