@@ -196,7 +196,13 @@ const tr = {
         href: "https://www.credly.com/badges/1ccd9943-c636-4821-9523-2ba527fb06f5/public_url",
         proof: "rozeti doğrula",
       },
-      { name: "Deep Learning Bootcamp", org: "Akbank", year: "2025" },
+      {
+        name: "Derin Öğrenmeye Giriş Bootcamp",
+        org: "Akbank — katılım sertifikası",
+        year: "2025",
+        href: "/certs/akbank-derin-ogrenme-bootcamp.pdf",
+        proof: "belgeyi gör",
+      },
       {
         name: "Dijital Usta — Çevrimiçi Eğitim Başlangıç Modülleri",
         org: "Dijital Usta Projesi — katılım belgesi",
@@ -415,7 +421,13 @@ const en = {
         href: "https://www.credly.com/badges/1ccd9943-c636-4821-9523-2ba527fb06f5/public_url",
         proof: "verify badge",
       },
-      { name: "Deep Learning Bootcamp", org: "Akbank", year: "2025" },
+      {
+        name: "Introduction to Deep Learning Bootcamp",
+        org: "Akbank — certificate of participation",
+        year: "2025",
+        href: "/certs/akbank-derin-ogrenme-bootcamp.pdf",
+        proof: "view certificate",
+      },
       {
         name: "Dijital Usta — Online Training Starter Modules",
         org: "Dijital Usta Project — certificate of participation",

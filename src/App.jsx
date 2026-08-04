@@ -3,7 +3,6 @@ import { MotionConfig } from "framer-motion";
 
 import { lazy, Suspense, useEffect } from "react";
 import { LocaleProvider } from "./i18n.jsx";
-import Cursor from "./components/Cursor.jsx";
 import SafeBoundary from "./components/SafeBoundary.jsx";
 
 /* The WebGL atmosphere is purely decorative, so it loads after the
@@ -52,7 +51,6 @@ export default function App() {
         {/* fine paper grain over everything — the printed-page feel */}
         <div className="paper" aria-hidden="true" />
         <SpotlightDelegate />
-        <Cursor />
         <Nav />
 
         <main>

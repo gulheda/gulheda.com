@@ -5,9 +5,9 @@ import Heading from "../components/Heading.jsx";
 const EASE = [0.16, 1, 0.3, 1];
 
 /* Each project row enters like a page being ruled: the hairline draws
-   itself across, the ghost numeral drifts in, and the content rises
-   through the fresh line — staggered, once, on first view. */
-function ProjectRow({ item, i, viewLabel }) {
+   itself across and the content rises through the fresh line —
+   staggered, once, on first view. */
+function ProjectRow({ item, viewLabel }) {
   const hasLink = item.link && item.link !== "#";
   const Tag = hasLink ? motion.a : motion.div;
 
@@ -39,21 +39,6 @@ function ProjectRow({ item, i, viewLabel }) {
             }
           : {})}
       >
-        <motion.span
-          className="project__ghost"
-          aria-hidden="true"
-          variants={{
-            hidden: { opacity: 0, x: -18 },
-            show: {
-              opacity: 1,
-              x: 0,
-              transition: { duration: 1.1, ease: EASE },
-            },
-          }}
-        >
-          {String(i + 1).padStart(2, "0")}
-        </motion.span>
-
         <motion.div
           className="project__main"
           variants={{
@@ -100,13 +85,8 @@ export default function Projects() {
         <Heading eyebrow={p.lead} title={p.heading} index="03" />
 
         <div className="projects__list">
-          {p.items.map((item, i) => (
-            <ProjectRow
-              key={item.title}
-              item={item}
-              i={i}
-              viewLabel={t.ui.view}
-            />
+          {p.items.map((item) => (
+            <ProjectRow key={item.title} item={item} viewLabel={t.ui.view} />
           ))}
         </div>
       </div>
