@@ -1,22 +1,44 @@
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { motion, useMotionValue } from "framer-motion";
 import { useLocale } from "../i18n.jsx";
+
+/* 0 → 1 over [a, b], clamped */
+const ramp = (p, a, b) => Math.min(1, Math.max(0, (p - a) / (b - a)));
 
 export default function Contact() {
   const ref = useRef(null);
   const { t, shared } = useLocale();
   const c = t.contact;
 
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end end"],
-  });
+  /* Progress is measured by hand from the live element rect, exactly the
+     way the shader gate does it. framer's useScroll caches the target's
+     offsets at mount, and by the time the lazy sections above have grown
+     the page those offsets are stale — which faded the text back OUT at
+     the very bottom. The text settles at ~60% of the runway, then stays. */
+  const opacity = useMotionValue(0);
+  const y = useMotionValue(46);
+  const hintFade = useMotionValue(1);
 
-  /* the text settles well before the scroll ends, then simply stays —
-     the tail of the section changes nothing on screen */
-  const opacity = useTransform(scrollYProgress, [0.3, 0.58], [0, 1]);
-  const y = useTransform(scrollYProgress, [0.3, 0.6], [46, 0]);
-  const hintFade = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
+  useEffect(() => {
+    const read = () => {
+      const el = ref.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const span = r.height - window.innerHeight;
+      const p = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
+      opacity.set(ramp(p, 0.3, 0.58));
+      y.set(46 * (1 - ramp(p, 0.3, 0.6)));
+      hintFade.set(1 - ramp(p, 0, 0.12));
+    };
+    /* driven by rAF, not scroll events: one rect read per frame is
+       negligible, and it stays correct even when scroll events are
+       swallowed (embedded browsers, some touch/zoom states) */
+    let raf = requestAnimationFrame(function loop() {
+      read();
+      raf = requestAnimationFrame(loop);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [opacity, y, hintFade]);
 
   return (
     <section id="contact" ref={ref} className="section contact">
