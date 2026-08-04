@@ -123,7 +123,7 @@ const tr = {
         context: "Teknofest İHA Yarışması · Eyl 2024 – Devam ediyor",
         role: "Otonom simülasyon geliştirici · 2 kişilik yazılım grubu",
         blurb:
-          "arm → takeoff → goto → hover → land görev döngüsünü pymavlink ile sıfırdan yazdım; SITL'de tutarlı biçimde çalışıyor. LiDAR + GNSS + kamera FOV füzyonuyla koordinat hesaplama ve lawnmower grid tarama modüllerini geliştirdim — sabit waypoint sayısıyla kapsanan alanı yaklaşık iki katına çıkardım.",
+          "Otonom görev döngüsünü pymavlink ile sıfırdan yazdım; sensör füzyonu ve grid taramayla kapsanan alanı yaklaşık iki katına çıkardım.",
         tech: ["Python", "pymavlink", "MAVSDK", "YOLOv8", "Gazebo Harmonic", "ArduPilot SITL", "ROS 2"],
         link: "",
       },
@@ -132,7 +132,7 @@ const tr = {
         context: "TÜBİTAK 2209-A (Desteklendi) · 2025 – Devam ediyor",
         role: "Proje yürütücüsü",
         blurb:
-          "ZTF astronomik görüntü veri setinde Real/Bogus sınıflandırması için CNN modeli geliştiriyorum; şu ana kadar 0.88 F1-score'a ulaştım. FITS formatında 10.000+ görüntü için NumPy/Pandas tabanlı veri temizleme ve ön işleme pipeline'ı kurdum.",
+          "Astronomik görüntülerde Real/Bogus sınıflandırması yapan bir CNN geliştiriyorum — 10.000+ görüntülük veri hattıyla 0.88 F1-score.",
         tech: ["Python", "CNN (Keras)", "NumPy", "Pandas", "FITS", "Matplotlib"],
         link: "",
       },
@@ -141,7 +141,7 @@ const tr = {
         context: "EBST Hackathon 2026 · Oca 2026",
         role: "Full-stack + yapay zekâ entegrasyonu · Takım projesi",
         blurb:
-          "GPT-4o entegrasyonuyla deprem enkaz ihbarlarını önceliklendiren ve kurtarma ekiplerine otomatik yönlendirme yapan platformu 42 saatte sıfırdan teslim ettim. Twilio SMS ile internet olmayan bölgelerden ihbar alımı, WebSocket ile gerçek zamanlı operatör paneli kurdum.",
+          "Deprem ihbarlarını GPT-4o ile önceliklendirip ekipleri yönlendiren platformu 42 saatte teslim ettik — SMS ihbarı ve gerçek zamanlı panel dahil.",
         tech: ["Python", "FastAPI", "React", "GPT-4o API", "Twilio SMS", "WebSocket", "Leaflet.js"],
         link: "",
       },
@@ -323,7 +323,7 @@ const en = {
         context: "Teknofest UAV Competition · Sep 2024 – Ongoing",
         role: "Autonomous simulation developer · 2-person software group",
         blurb:
-          "I wrote the arm → takeoff → goto → hover → land mission loop from scratch with pymavlink; it runs consistently in SITL. I built coordinate computation through LiDAR + GNSS + camera FOV fusion, and a lawnmower grid scanning module that roughly doubled the area covered with the same number of waypoints.",
+          "I wrote the autonomous mission loop from scratch with pymavlink; sensor fusion and grid scanning roughly doubled the area covered.",
         tech: ["Python", "pymavlink", "MAVSDK", "YOLOv8", "Gazebo Harmonic", "ArduPilot SITL", "ROS 2"],
         link: "",
       },
@@ -332,7 +332,7 @@ const en = {
         context: "TÜBİTAK 2209-A (Funded) · 2025 – Ongoing",
         role: "Principal investigator",
         blurb:
-          "I'm developing a CNN model for Real/Bogus classification on the ZTF astronomical image dataset, reaching an F1-score of 0.88 so far. I built a NumPy/Pandas preprocessing pipeline for 10,000+ images in FITS format.",
+          "I'm building a CNN for Real/Bogus classification of astronomical images — 0.88 F1-score on a 10,000+ image pipeline.",
         tech: ["Python", "CNN (Keras)", "NumPy", "Pandas", "FITS", "Matplotlib"],
         link: "",
       },
@@ -341,7 +341,7 @@ const en = {
         context: "EBST Hackathon 2026 · Jan 2026",
         role: "Full-stack + AI integration · Team project",
         blurb:
-          "In 42 hours I shipped a platform that triages earthquake rubble reports with GPT-4o and automatically routes rescue teams. I added Twilio SMS intake for areas without internet, and a real-time operator panel over WebSocket.",
+          "We shipped a platform in 42 hours that triages earthquake reports with GPT-4o and routes rescue teams — including SMS intake and a real-time panel.",
         tech: ["Python", "FastAPI", "React", "GPT-4o API", "Twilio SMS", "WebSocket", "Leaflet.js"],
         link: "",
       },

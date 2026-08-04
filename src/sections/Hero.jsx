@@ -8,7 +8,6 @@ import {
   useReducedMotion,
 } from "framer-motion";
 import { useLocale } from "../i18n.jsx";
-import OrbitBadge from "../components/OrbitBadge.jsx";
 
 /* =====================================================================
    HERO — an asymmetric two-column opening.
@@ -125,19 +124,12 @@ export default function Hero() {
             ))}
           </motion.p>
 
-          <motion.p className="hero__tag" variants={rise}>
-            {identity.tagline}
-          </motion.p>
-
           <motion.ul className="hero__spec" variants={rise}>
             {identity.meta?.status && (
               <li className="hero__spec-item hero__spec-item--status">
                 <span className="hero__dot" aria-hidden="true" />
                 {identity.meta.status}
               </li>
-            )}
-            {identity.meta?.focus && (
-              <li className="hero__spec-item">{identity.meta.focus}</li>
             )}
           </motion.ul>
 
@@ -156,24 +148,15 @@ export default function Hero() {
                 →
               </span>
             </a>
-            <OrbitBadge
-              text={t.ui.orbit}
-              label={t.ui.orbitLabel}
-              onClick={() => go("collaborate")}
-            />
           </motion.div>
         </motion.div>
 
-        {/* ------------- right: category panels ------------- */}
+        {/* ------------- right: a quiet index of the site ------------- */}
         <motion.nav
           className="panels"
           variants={panelsWrap}
           aria-label={t.ui.panelsLabel}
         >
-          <motion.p className="panels__label" variants={panelV}>
-            {t.ui.panelsLabel}
-          </motion.p>
-
           {t.ui.panels.map((p) => (
             <motion.button
               key={p.id}
@@ -184,13 +167,10 @@ export default function Hero() {
               data-spot=""
               data-cursor="hover"
             >
-              <span className="panel__ghost" aria-hidden="true">
+              <span className="panel__index" aria-hidden="true">
                 {p.k}
               </span>
-              <span className="panel__body">
-                <span className="panel__title">{p.title}</span>
-                <span className="panel__note">{p.note}</span>
-              </span>
+              <span className="panel__title">{p.title}</span>
               <span className="panel__arrow" aria-hidden="true">
                 →
               </span>
