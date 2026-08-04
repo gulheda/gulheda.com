@@ -760,7 +760,13 @@ export default function Atmosphere() {
     };
     raf = requestAnimationFrame(frame);
 
+    /* tell the page the stage is lit — the hero holds its type back
+       until this moment, so the bloom is never missed on slow networks */
+    document.documentElement.classList.add("atmo-on");
+    window.dispatchEvent(new Event("atmosphere-ready"));
+
     return () => {
+      document.documentElement.classList.remove("atmo-on");
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
       window.removeEventListener("scroll", readScroll);

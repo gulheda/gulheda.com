@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useScroll,
@@ -40,6 +40,25 @@ export default function Hero() {
   const tiltX = useSpring(mx, { stiffness: 60, damping: 22, mass: 0.6 });
   const tiltY = useSpring(my, { stiffness: 60, damping: 22, mass: 0.6 });
 
+  /* the type waits for the atmosphere: on a slow connection the WebGL
+     chunk lands late, and without this the text used to appear on a
+     flat background before the bloom ever opened. If the decoration
+     fails or stalls, a short timeout lets the page proceed anyway. */
+  const [staged, setStaged] = useState(false);
+  useEffect(() => {
+    if (document.documentElement.classList.contains("atmo-on")) {
+      setStaged(true);
+      return;
+    }
+    const on = () => setStaged(true);
+    window.addEventListener("atmosphere-ready", on, { once: true });
+    const fallback = setTimeout(on, 2400);
+    return () => {
+      window.removeEventListener("atmosphere-ready", on);
+      clearTimeout(fallback);
+    };
+  }, []);
+
   useEffect(() => {
     if (reduce) return;
     const onMove = (e) => {
@@ -71,7 +90,7 @@ export default function Hero() {
         style={{ y, opacity: fade, x: tiltX }}
         variants={stagger}
         initial="hidden"
-        animate="show"
+        animate={staged ? "show" : "hidden"}
       >
         <motion.p className="eyebrow eyebrow--code hero__welcome" variants={rise}>
           {"// " + identity.welcome}
@@ -148,7 +167,7 @@ export default function Hero() {
       <motion.div
         className="hero__cue-wrap"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        animate={{ opacity: staged ? 1 : 0 }}
         transition={{ delay: 3.4, duration: 1.2, ease: "easeOut" }}
       >
         <motion.a
