@@ -10,15 +10,13 @@ import {
 import { useLocale } from "../i18n.jsx";
 
 /* =====================================================================
-   HERO — an asymmetric two-column opening.
+   HERO — the threshold, mirrored.
 
-   Left: the identity — name, role, one line, status, call to action.
-   Right: interactive category panels that take the visitor straight
-   into the part of the site they came for.
-
-   This replaces the earlier centred nameplate inside a frame: a single
-   symmetric block of type on an atmospheric wash read as a card, not
-   as a portfolio.
+   The site now opens the way it closes: a centred cinematic composition
+   in the language of the contact section she loves — mono eyebrow, the
+   NAME large, the hairline-and-diamond rule, the profession in spaced
+   capitals, an italic line, and a quiet horizontal index into the site.
+   The work speaks in the sections; the front door carries the person.
    ===================================================================== */
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -35,7 +33,7 @@ export default function Hero() {
   const fade = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
   const cueFade = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
 
-  /* the identity column leans a few pixels toward the pointer */
+  /* the whole composition leans a few pixels toward the pointer */
   const reduce = useReducedMotion();
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
@@ -45,8 +43,8 @@ export default function Hero() {
   useEffect(() => {
     if (reduce) return;
     const onMove = (e) => {
-      mx.set((e.clientX / window.innerWidth - 0.5) * 12);
-      my.set((e.clientY / window.innerHeight - 0.5) * 8);
+      mx.set((e.clientX / window.innerWidth - 0.5) * 10);
+      my.set((e.clientY / window.innerHeight - 0.5) * 7);
     };
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
@@ -54,141 +52,95 @@ export default function Hero() {
 
   const stagger = {
     hidden: {},
-    show: { transition: { staggerChildren: 0.14, delayChildren: 0.9 } },
+    show: { transition: { staggerChildren: 0.16, delayChildren: 1.0 } },
   };
   const rise = {
     hidden: { opacity: 0, y: 22 },
     show: { opacity: 1, y: 0, transition: { duration: 1.4, ease: EASE } },
   };
-  const stmtWrap = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.12, delayChildren: 0.25 } },
-  };
-  const stmtPart = {
-    hidden: { opacity: 0, y: "0.35em" },
-    show: { opacity: 1, y: 0, transition: { duration: 1.3, ease: EASE } },
-  };
-  const panelsWrap = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.09, delayChildren: 1.5 } },
-  };
-  const panelV = {
-    hidden: { opacity: 0, x: 26 },
-    show: { opacity: 1, x: 0, transition: { duration: 1.1, ease: EASE } },
-  };
 
   const go = (id) =>
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
-
   return (
     <section id="hero" ref={ref} className="section hero">
+      <div className="hero__glow" aria-hidden="true" />
+
       <motion.div
-        className="hero__grid wrap"
-        style={{ y, opacity: fade }}
+        className="hero__center wrap"
+        style={{ y, opacity: fade, x: tiltX }}
         variants={stagger}
         initial="hidden"
         animate="show"
       >
-        {/* ---------------- left: identity ---------------- */}
-        <motion.div className="hero__id" style={{ x: tiltX, y: tiltY }}>
-          <motion.p
-            className="eyebrow eyebrow--code hero__welcome"
-            variants={rise}
-          >
-            {"// " + identity.welcome}
-          </motion.p>
+        <motion.p className="eyebrow eyebrow--code hero__welcome" variants={rise}>
+          {"// " + identity.welcome}
+        </motion.p>
 
-          {/* the name is a masthead credit, not a monument */}
-          <motion.h1 className="hero__name" variants={rise}>
-            <span className="hero__name-text">{shared.fullName}</span>
-            <span className="hero__name-rule" aria-hidden="true" />
-            <span className="hero__name-role">{identity.title}</span>
-          </motion.h1>
+        {/* the name carries the page now */}
+        <motion.h1 className="hero__bigname display" variants={rise}>
+          {shared.fullName}
+        </motion.h1>
 
-          {/* the large type carries what she does, not who she is */}
-          <motion.p
-            className="hero__statement display"
-            variants={stmtWrap}
-            aria-label={identity.statement.map((x) => x.t).join("")}
-          >
-            {identity.statement.map((part, i) => (
-              <motion.span
-                key={i}
-                className={part.em ? "hero__stmt-em" : "hero__stmt"}
-                variants={stmtPart}
-                aria-hidden="true"
-              >
-                {part.t}
-              </motion.span>
-            ))}
-          </motion.p>
-
-          {/* the same quiet ornament the contact threshold ends on */}
-          <motion.div className="rule hero__rule" variants={rise} aria-hidden="true">
-            <span className="rule__line rule__line--l" />
-            <span className="rule__gem" />
-            <span className="rule__line rule__line--r" />
-          </motion.div>
-
-          <motion.p className="hero__tag" variants={rise}>
-            {identity.tagline}
-          </motion.p>
-
-          <motion.ul className="hero__spec" variants={rise}>
-            {identity.meta?.status && (
-              <li className="hero__spec-item hero__spec-item--status">
-                <span className="hero__dot" aria-hidden="true" />
-                {identity.meta.status}
-              </li>
-            )}
-          </motion.ul>
-
-          <motion.div className="hero__actions" variants={rise}>
-            <a
-              className="hero__cta"
-              href="#collaborate"
-              data-cursor="hover"
-              onClick={(e) => {
-                e.preventDefault();
-                go("collaborate");
-              }}
-            >
-              <span className="hero__cta-text">{t.ui.heroCta}</span>
-              <span className="hero__cta-arrow" aria-hidden="true">
-                →
-              </span>
-            </a>
-          </motion.div>
+        <motion.div className="rule hero__rule" variants={rise} aria-hidden="true">
+          <span className="rule__line rule__line--l" />
+          <span className="rule__gem" />
+          <span className="rule__line rule__line--r" />
         </motion.div>
 
-        {/* ------------- right: a quiet index of the site ------------- */}
+        <motion.p className="hero__role" variants={rise}>
+          {identity.title}
+        </motion.p>
+
+        <motion.p className="hero__tag" variants={rise}>
+          {identity.tagline}
+        </motion.p>
+
+        <motion.ul className="hero__spec" variants={rise}>
+          {identity.meta?.status && (
+            <li className="hero__spec-item hero__spec-item--status">
+              <span className="hero__dot" aria-hidden="true" />
+              {identity.meta.status}
+            </li>
+          )}
+        </motion.ul>
+
+        <motion.div className="hero__actions" variants={rise}>
+          <a
+            className="hero__cta"
+            href="#collaborate"
+            data-cursor="hover"
+            onClick={(e) => {
+              e.preventDefault();
+              go("collaborate");
+            }}
+          >
+            <span className="hero__cta-text">{t.ui.heroCta}</span>
+            <span className="hero__cta-arrow" aria-hidden="true">
+              →
+            </span>
+          </a>
+        </motion.div>
+
+        {/* a quiet horizontal index into the site, like the socials row */}
         <motion.nav
-          className="panels"
-          variants={panelsWrap}
+          className="hero__dirs"
+          variants={rise}
           aria-label={t.ui.panelsLabel}
         >
           {t.ui.panels.map((p) => (
-            <motion.button
+            <button
               key={p.id}
               type="button"
-              className="panel"
-              variants={panelV}
+              className="hero__dir"
               onClick={() => go(p.id)}
-              data-spot=""
               data-cursor="hover"
             >
-              <span className="panel__index" aria-hidden="true">
+              <span className="hero__dir-k" aria-hidden="true">
                 {p.k}
               </span>
-              <span className="panel__body">
-                <span className="panel__title">{p.title}</span>
-                <span className="panel__note">{p.note}</span>
-              </span>
-              <span className="panel__arrow" aria-hidden="true">
-                →
-              </span>
-            </motion.button>
+              {p.title}
+            </button>
           ))}
         </motion.nav>
       </motion.div>
