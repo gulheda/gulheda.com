@@ -1,16 +1,38 @@
-# React + Vite
+# gulheda.com
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Gülheda Kızılhan — Bilgisayar Mühendisi. Kişisel portfolyo sitesi.
 
-Currently, two official plugins are available:
+**Canlı:** [gulheda.com](https://gulheda.com)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Öne çıkanlar
 
-## React Compiler
+- **WebGL atmosfer** — three.js + özel GLSL: domain-warped fbm bulut katmanı,
+  ışık hüzmeleri, film greni; hata durumunda sayfayı asla düşürmeyen
+  SafeBoundary ile dekoratif katman olarak yüklenir.
+- **İki dil** — TR (varsayılan) / EN; özel `LocaleProvider` ile,
+  tercih `localStorage`'da tutulur.
+- **İletişim akışı** — konu algılama (yazılan metinden teknolojileri
+  çıkaran kural tabanlı tarama), bal küpü (honeypot) koruması ve
+  Formspree gönderimi. Uç nokta tanımlı değilse form demo modunda
+  çalışır ve bunu arayüzde açıkça söyler.
+- **Motion** — framer-motion ile scroll-driven reveal'lar, marquee,
+  orbit rozeti ve imleç spotlight'ları; `prefers-reduced-motion`'a saygılı.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Geliştirme
 
-## Expanding the Oxlint configuration
+```bash
+npm install
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+İletişim formunu canlıya bağlamak için `.env.example` dosyasını `.env`
+olarak kopyalayıp kendi Formspree adresini yaz. Ayrıntılar: [DEPLOY.md](DEPLOY.md)
+
+## Yığın
+
+React 19 · Vite · three.js · framer-motion
+
+---
+
+© Gülheda Kızılhan — kod incelemek ve ilham almak serbest; birebir
+kopyalayıp kendi portfolyon olarak yayınlamak değil.
