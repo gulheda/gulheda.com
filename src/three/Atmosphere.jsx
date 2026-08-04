@@ -218,7 +218,8 @@ const ATMOS_FRAG = /* glsl */ `
       float hd = distance(p, hc);
       float angH = atan(p.y - hc.y, p.x - hc.x);
       float edgeN = fbm(p * 3.0 + uTime * 0.04) * 0.15;
-      float lobe = pow(abs(cos(angH * 4.5 + (1.0 - uIntro) * 1.3)), 0.55);
+      float lobe = pow(abs(cos(angH * 4.5 + (1.0 - uIntro) * 1.3
+                             + uTime * 0.02)), 0.55);
       float radius = uIntro * uIntro * 1.9 * (0.74 + 0.26 * lobe);
       float aperture = smoothstep(radius, radius - 0.34, hd + edgeN);
 
@@ -718,9 +719,14 @@ export default function Atmosphere() {
       bgUniforms.uTime.value = t;
 
       // page-load bloom: after a beat of darkness, the rose of light
-      // unfolds over ~4.2s with a silk ease-out (reduced motion → 1)
+      // unfolds over ~4.2s with a silk ease-out (reduced motion → 1).
+      // It no longer opens all the way and vanishes: while the hero owns
+      // the view it RESTS at the same sweet spot as the closing gate —
+      // petals on screen — and only opens fully as the visitor scrolls on.
       const introRaw = Math.min(1, Math.max(0, (t - 0.35) / 4.2));
-      bgUniforms.uIntro.value = 1 - Math.pow(1 - introRaw, 3);
+      const introEase = 1 - Math.pow(1 - introRaw, 3);
+      const hold = 1 - 0.38 * bgUniforms.uHero.value;
+      bgUniforms.uIntro.value = introEase * hold;
       // ease scroll-driven values slightly so they feel weighted
       bgUniforms.uScroll.value +=
         (scrollT - bgUniforms.uScroll.value) * 0.06;
