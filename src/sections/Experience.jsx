@@ -1,6 +1,76 @@
+import { motion } from "framer-motion";
 import { useLocale } from "../i18n.jsx";
 import Reveal from "../components/Reveal.jsx";
 import Heading from "../components/Heading.jsx";
+
+const EASE = [0.16, 1, 0.3, 1];
+
+/* one certificate row: the hairline draws itself, then the content
+   rises through it — and rows with a document open the real proof */
+function CertRow({ c, i }) {
+  const Tag = c.href ? motion.a : motion.div;
+  return (
+    <motion.li
+      className="cert-row__wrap"
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ staggerChildren: 0.12, delayChildren: 0.08 * i }}
+    >
+      <motion.span
+        className="cert-row__line"
+        aria-hidden="true"
+        variants={{
+          hidden: { scaleX: 0 },
+          show: { scaleX: 1, transition: { duration: 1.1, ease: EASE } },
+        }}
+      />
+      <Tag
+        className="cert-row"
+        data-spot=""
+        {...(c.href
+          ? {
+              href: c.href,
+              target: "_blank",
+              rel: "noreferrer",
+              "data-cursor": "hover",
+            }
+          : {})}
+      >
+        <motion.span
+          className="cert-row__year"
+          variants={{
+            hidden: { opacity: 0, x: -14 },
+            show: { opacity: 1, x: 0, transition: { duration: 0.9, ease: EASE } },
+          }}
+        >
+          {c.year || "—"}
+        </motion.span>
+        <motion.span
+          className="cert-row__body"
+          variants={{
+            hidden: { opacity: 0, y: 22 },
+            show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: EASE } },
+          }}
+        >
+          <span className="cert-row__name display">{c.name}</span>
+          <span className="cert-row__org">{c.org}</span>
+        </motion.span>
+        {c.href && (
+          <motion.span
+            className="cert-row__go"
+            variants={{
+              hidden: { opacity: 0, x: 14 },
+              show: { opacity: 1, x: 0, transition: { duration: 0.9, ease: EASE } },
+            }}
+          >
+            {c.proof} <span aria-hidden="true">↗</span>
+          </motion.span>
+        )}
+      </Tag>
+    </motion.li>
+  );
+}
 
 /* Experience, education and certificates as one editorial timeline —
    a fine gold spine with entries hanging off it. */
@@ -52,18 +122,7 @@ export default function Experience() {
         </Reveal>
         <ul className="certs">
           {x.certificates.map((c, i) => (
-            <Reveal
-              as="li"
-              key={c.name}
-              delay={0.04 * i}
-              y={22}
-              className="cert"
-              data-spot=""
-            >
-              <span className="cert__name">{c.name}</span>
-              <span className="cert__org">{c.org}</span>
-              {c.year && <span className="cert__year">{c.year}</span>}
-            </Reveal>
+            <CertRow key={c.name} c={c} i={i} />
           ))}
         </ul>
       </div>

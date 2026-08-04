@@ -183,13 +183,32 @@ const tr = {
     certificatesLabel: "Sertifikalar & Eğitimler",
     certificates: [
       {
+        name: "Yapay Zeka ve İHA Simülasyon Eğitimi",
+        org: "SoftVation — bitirme sertifikası",
+        year: "Mart 2026",
+        href: "/certs/softvation-yapay-zeka-iha-simulasyon.pdf",
+        proof: "belgeyi gör",
+      },
+      {
+        name: "CCNA: Introduction to Networks",
+        org: "Cisco Networking Academy — Credly rozetiyle doğrulanmış",
+        year: "2026",
+        href: "https://www.credly.com/badges/1ccd9943-c636-4821-9523-2ba527fb06f5/public_url",
+        proof: "rozeti doğrula",
+      },
+      { name: "Deep Learning Bootcamp", org: "Akbank", year: "2025" },
+      {
+        name: "Dijital Usta — Çevrimiçi Eğitim Başlangıç Modülleri",
+        org: "Dijital Usta Projesi — katılım belgesi",
+        year: "",
+        href: "/certs/dijital-usta-katilim-belgesi.pdf",
+        proof: "belgeyi gör",
+      },
+      {
         name: "R/C Model Uçak Manuel Uçuş Eğitimi",
         org: "TÜBİTAK İHA Yarışmaları — takım pilotları eğitimi",
         year: "",
       },
-      { name: "Yapay Zeka ve İHA Simülasyon Eğitimi", org: "SoftVation", year: "Mart 2026" },
-      { name: "Deep Learning Bootcamp", org: "Akbank", year: "2025" },
-      { name: "Computer Networks Training", org: "Cisco Networking", year: "2026" },
       {
         name: "İngilizce Sertifikası — B2",
         org: "American Life Language Institute",
@@ -383,14 +402,37 @@ const en = {
     certificatesLabel: "Certificates & Training",
     certificates: [
       {
+        name: "AI and UAV Simulation Training",
+        org: "SoftVation — certificate of completion",
+        year: "Mar 2026",
+        href: "/certs/softvation-yapay-zeka-iha-simulasyon.pdf",
+        proof: "view certificate",
+      },
+      {
+        name: "CCNA: Introduction to Networks",
+        org: "Cisco Networking Academy — verified via Credly badge",
+        year: "2026",
+        href: "https://www.credly.com/badges/1ccd9943-c636-4821-9523-2ba527fb06f5/public_url",
+        proof: "verify badge",
+      },
+      { name: "Deep Learning Bootcamp", org: "Akbank", year: "2025" },
+      {
+        name: "Dijital Usta — Online Training Starter Modules",
+        org: "Dijital Usta Project — certificate of participation",
+        year: "",
+        href: "/certs/dijital-usta-katilim-belgesi.pdf",
+        proof: "view certificate",
+      },
+      {
         name: "R/C Model Aircraft Manual Flight Training",
         org: "TÜBİTAK UAV Competitions — training for team pilots",
         year: "",
       },
-      { name: "AI and UAV Simulation Training", org: "SoftVation", year: "Mar 2026" },
-      { name: "Deep Learning Bootcamp", org: "Akbank", year: "2025" },
-      { name: "Computer Networks Training", org: "Cisco Networking", year: "2026" },
-      { name: "English Language Certificate — B2", org: "American Life Language Institute", year: "2024" },
+      {
+        name: "English Language Certificate — B2",
+        org: "American Life Language Institute",
+        year: "2024",
+      },
     ],
   },
 
